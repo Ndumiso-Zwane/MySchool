@@ -1,0 +1,66 @@
+﻿@page "/editstudent/{id:int}"
+@using MySchool.Client.Interfaces
+@using MySchool.Shared
+@using MySchool.Shared.Models;
+@inject IApiService ApiService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit Student</PageTitle>
+<h1>Edit Student</h1>
+
+<hr/>
+
+<EditForm Model="student" OnSubmit="HandleSubmit">
+    <div>
+        <label>First Name</label>
+        <InputText @bind-Value="student.FirstName" class="form-control"></InputText>
+    </div>
+    <br />
+    <div>
+        <label>Last Name</label>
+        <InputText @bind-Value="student.LastName" class="form-control"></InputText>
+    </div>
+    <br />
+    <div>
+        <label>Course</label>
+        <InputSelect @bind-Value="student.CourseId" class="form-select">
+            @foreach(var course in ApiService.Courses)
+            {
+                <option value="@course.Id">@course.Name</option>
+            }
+        </InputSelect>
+    </div>
+    <br />
+    <div>
+        <label>Enrollment Status</label>
+        <InputSelect @bind-Value="student.EnrollmentStatus" class="form-select">
+            <option value="enrolled">Enrolled</option>
+            <option value="complete">Complete</option>
+        </InputSelect>
+    </div>
+    <br />
+    <div>
+        <label>Enrollment Date</label>
+        <InputDate @bind-Value="student.EnrollmentDate" class="form-select"></InputDate>
+    </div>
+    <br/>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    Student student = new Student { Course = new Course() };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ApiService.GetCourses();
+        student = await ApiService.GetStudent((int)Id);
+    }
+
+    async Task HandleSubmit()
+    {
+        await ApiService.UpdateStudent(student);
+    }
+}

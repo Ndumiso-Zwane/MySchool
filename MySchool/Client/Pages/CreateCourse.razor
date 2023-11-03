@@ -1,0 +1,34 @@
+﻿@page "/createcourse"
+@using MySchool.Client.Interfaces
+@using MySchool.Shared
+@using MySchool.Shared.Models;
+@inject IApiService ApiService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create Course</PageTitle>
+<h1>Create Course</h1>
+
+<hr/>
+
+<EditForm Model="course" OnSubmit="HandleSubmit">
+    <div>
+        <label>Name</label>
+        <InputText @bind-Value="course.Name" class="form-control"></InputText>
+    </div>
+    <br/>
+    <div>
+        <label>Description</label>
+        <InputText @bind-Value="course.Description" class="form-control"></InputText>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    Course course = new Course();
+
+    async Task HandleSubmit()
+    {
+        await ApiService.CreateCourse(course);
+    }
+}

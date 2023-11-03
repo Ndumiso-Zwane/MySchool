@@ -1,0 +1,47 @@
+﻿@page "/editsubject/{id:int}"
+@using MySchool.Client.Interfaces
+@using MySchool.Shared
+@using MySchool.Shared.Models;
+@inject IApiService ApiService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit Subject</PageTitle>
+<h1>Edit Subject</h1>
+
+<hr />
+
+<EditForm Model="subject" OnSubmit="HandleSubmit">
+    <div>
+        <label>Name</label>
+        <InputText @bind-Value="subject.Name" class="form-control"></InputText>
+    </div>
+    <br />
+    <div>
+        <label>Description</label>
+        <InputText @bind-Value="subject.Description" class="form-control"></InputText>
+    </div>
+    <br />
+    <div>
+        <label>Department</label>
+        <InputText @bind-Value="subject.Department" class="form-control"></InputText>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    Subject subject = new Subject();
+
+    protected override async Task OnInitializedAsync()
+    {
+        subject = await ApiService.GetSubject((int)Id);
+    }
+
+    async Task HandleSubmit()
+    {
+        await ApiService.UpdateSubject(subject);
+    }
+}

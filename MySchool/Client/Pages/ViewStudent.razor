@@ -1,0 +1,61 @@
+﻿@page "/viewstudent/{id:int}"
+@using MySchool.Client.Interfaces
+@using MySchool.Shared
+@using MySchool.Shared.Models;
+@inject IApiService ApiService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Student Details</PageTitle>
+<h1>Student Details</h1>
+
+<hr/>
+<div class="row">
+    <div class="col">
+        <h4>First Name:</h4>
+        <h4>Last Name:</h4>
+        <h4>Enrollment Date:</h4>
+        <h4>Enrollment Status:</h4>
+        <h4>Course:</h4>
+    </div>
+    <div class="col">
+        <h4>@student.FirstName</h4>
+        <h4>@student.LastName</h4>
+        <h4>@student.EnrollmentDate</h4>
+        <h4>@student.EnrollmentStatus</h4>
+        <h4>@course.Name</h4>
+    </div>
+</div>
+<br/>
+<div>
+    <h3>Subjects</h3>
+    <table class="table">
+        <tbody>
+            @foreach (var subject in ApiService.CourseSubjects)
+            {
+                <tr>
+                    <td>@subject.Subject.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    Student student = new Student();
+    Course course = new Course();
+
+    protected override async Task OnInitializedAsync()
+    {
+        student = await ApiService.GetStudent((int)Id); 
+        course = await ApiService.GetCourse(student.CourseId);
+        await ApiService.GetCourseSubjectsByCourse(student.CourseId);
+    }
+
+    async Task HandleSubmit()
+    {
+        await ApiService.UpdateStudent(student);
+    }
+}

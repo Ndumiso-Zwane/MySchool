@@ -1,0 +1,59 @@
+﻿@page "/createcoursesubject"
+@using MySchool.Client.Interfaces
+@using MySchool.Shared
+@using MySchool.Shared.Models;
+@inject IApiService ApiService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Add Course Subject</PageTitle>
+<h1>Add Course Subject</h1>
+
+<hr/>
+
+<EditForm Model="courseSubject" OnSubmit="HandleSubmit">
+    <div>
+        <label>Course</label>
+        <InputSelect @bind-Value="courseSubject.CourseId" class="form-select">
+            @foreach (var course in ApiService.Courses)
+            {
+                <option value="@course.Id">@course.Name</option>
+            }
+        </InputSelect>
+    </div>
+    <br />
+    <div>
+        <label>Subject</label>
+        <InputSelect @bind-Value="courseSubject.SubjectId" class="form-select">
+            @foreach (var subject in ApiService.Subjects)
+            {
+                <option value="@subject.Id">@subject.Name</option>
+            }
+        </InputSelect>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    CourseSubject courseSubject = new CourseSubject { Course = new Course(), Subject = new Subject() };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ApiService.GetCourses();
+        await ApiService.GetSubjects();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        courseSubject.Course = ApiService.Courses[0];
+        courseSubject.CourseId = courseSubject.Course.Id;
+        
+        courseSubject.Subject = ApiService.Subjects[0];
+        courseSubject.SubjectId = courseSubject.Subject.Id;
+    }
+
+    async Task HandleSubmit()
+    {
+        await ApiService.CreateCourseSubject(courseSubject);
+    }
+}

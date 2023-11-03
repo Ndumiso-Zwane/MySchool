@@ -1,0 +1,51 @@
+﻿@page "/coursesubjects"
+@using MySchool.Client.Interfaces
+@using MySchool.Shared
+@inject IApiService ApiService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Course Subjects</PageTitle>
+<h1>Course Subjects</h1>
+
+<hr/>
+
+<button class="btn btn-primary" @onclick="CreateCourseSubject">Create Course Subject</button>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Course</th>
+            <th>Subject</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var courseSubject in ApiService.CourseSubjects)
+        {
+            <tr>
+                <td>@courseSubject.Course.Name</td>
+                <td>@courseSubject.Subject.Name</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="(() => DeleteCourseSubject(courseSubject.Id))"><i class="oi oi-trash"></i></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ApiService.GetCourseSubjects();
+    }
+
+    void DeleteCourseSubject(int id)
+    {
+        ApiService.DeleteCourseSubject(id);
+    }
+
+    void CreateCourseSubject()
+    {
+        NavigationManager.NavigateTo("/createcoursesubject");
+    }
+}

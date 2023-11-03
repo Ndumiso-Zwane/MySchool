@@ -1,0 +1,59 @@
+﻿@page "/subjects"
+@using MySchool.Client.Interfaces
+@using MySchool.Shared
+@inject IApiService ApiService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Subjects</PageTitle>
+<h1>Subjects</h1>
+
+<hr />
+
+<button class="btn btn-primary" @onclick="CreateSubject">Create Subject</button>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Department</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var subject in ApiService.Subjects)
+        {
+            <tr>
+                <td>@subject.Name</td>
+                <td>@subject.Description</td>
+                <td>@subject.Department</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="(() => EditSubject(subject.Id))"><i class="oi oi-pencil"></i></button>
+                    <button class="btn btn-primary" @onclick="(() => DeleteSubject(subject.Id))"><i class="oi oi-trash"></i></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ApiService.GetSubjects();
+    }
+
+    void EditSubject(int id)
+    {
+        NavigationManager.NavigateTo($"editsubject/{id}");
+    }
+
+    void DeleteSubject(int id)
+    {
+        ApiService.DeleteSubject(id);
+    }
+
+    void CreateSubject()
+    {
+        NavigationManager.NavigateTo("/createsubject");
+    }
+}

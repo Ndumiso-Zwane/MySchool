@@ -1,0 +1,57 @@
+﻿@page "/createstudent"
+@using MySchool.Client.Interfaces
+@using MySchool.Shared
+@using MySchool.Shared.Models;
+@inject IApiService ApiService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create Students</PageTitle>
+<h1>Create Student</h1>
+
+<hr/>
+
+<EditForm Model="student" OnSubmit="HandleSubmit">
+    <div>
+        <label>First Name</label>
+        <InputText @bind-Value="student.FirstName" class="form-control"></InputText>
+    </div>
+    <br/>
+    <div>
+        <label>Last Name</label>
+        <InputText @bind-Value="student.LastName" class="form-control"></InputText>
+    </div>
+    <br />
+    <div>
+        <label>Course</label>
+        <InputSelect @bind-Value="student.CourseId" class="form-select">
+            @foreach(var course in ApiService.Courses)
+            {
+                <option value="@course.Id">@course.Name</option>
+            }
+        </InputSelect>
+    </div>
+    <br/>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    Student student = new Student { Course = new Course() };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ApiService.GetCourses();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        student.Course = ApiService.Courses[0];
+        student.CourseId = student.Course.Id;
+    }
+
+    async Task HandleSubmit()
+    {
+        student.EnrollmentDate = DateTime.Now;
+        student.EnrollmentStatus = "Enrolled";
+        await ApiService.CreateStudent(student);
+    }
+}

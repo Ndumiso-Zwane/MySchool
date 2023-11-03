@@ -1,0 +1,70 @@
+﻿@page "/"
+@page "/students"
+@using MySchool.Client.Interfaces
+@using MySchool.Shared
+@inject IApiService ApiService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Students</PageTitle>
+<h1>Students</h1>
+
+<hr/>
+
+<button class="btn btn-primary" @onclick="CreateStudent">Create Student</button>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Course</th>
+            <th>Enrollment Date</th>
+            <th>Enrollment Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in ApiService.Students)
+        {
+            <tr>
+                <td>@student.FirstName</td>
+                <td>@student.LastName</td>
+                <td>@student.Course.Name</td>
+                <td>@student.EnrollmentDate</td>
+                <td>@student.EnrollmentStatus</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="(() => ViewStudent(student.Id))"><i class="oi oi-eye"></i></button>
+                    <button class="btn btn-primary" @onclick="(() => EditStudent(student.Id))"><i class="oi oi-pencil"></i></button>
+                    <button class="btn btn-primary" @onclick="(() => DeleteStudent(student.Id))"><i class="oi oi-trash"></i></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ApiService.GetStudents();
+    }
+
+    void ViewStudent(int id)
+    {
+        NavigationManager.NavigateTo($"viewstudent/{id}");
+    }
+    
+    void EditStudent(int id)
+    {
+        NavigationManager.NavigateTo($"editstudent/{id}");
+    }
+
+    void DeleteStudent(int id)
+    {
+        ApiService.DeleteStudent(id);
+    }
+
+    void CreateStudent()
+    {
+        NavigationManager.NavigateTo("/createstudent");
+    }
+}
